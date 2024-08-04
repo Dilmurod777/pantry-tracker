@@ -7,13 +7,15 @@ import {PantryItem} from "@/app/lib/models";
 import Searchbar from "@/components/Searchbar";
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import Button from "@mui/material/Button";
+import AddPantryItemDialog from "@/components/AddPantryItemDialog";
+import addPantryItemDialog from "@/components/AddPantryItemDialog";
 
 const theme = createTheme({
     palette: {
         primary: {
             main: '#379777',
         },
-        secondary:{
+        secondary: {
             main: "#F4CE14"
         }
     },
@@ -22,6 +24,7 @@ const theme = createTheme({
 export default function Home() {
     const [loading, setLoading] = useState(false);
     const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
+    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
     const searchItemByName = (name: string) => {
         console.log(`searched ${name}`)
@@ -40,8 +43,10 @@ export default function Home() {
                 <DataTable rows={pantryItems}/>
 
                 <div className={"flex items-center justify-end py-4 w-full "}>
-                    <Button variant="contained">Add</Button>
+                    <Button variant="contained" onClick={() => setIsAddDialogOpen(true)}>Add</Button>
                 </div>
+
+                <AddPantryItemDialog isOpen={isAddDialogOpen} handleClose={() => setIsAddDialogOpen(false)}/>
             </main>
         </ThemeProvider>
     );
