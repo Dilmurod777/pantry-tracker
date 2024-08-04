@@ -19,7 +19,7 @@ export default function RootLayout({
         <html lang="en">
         <body className={`${inter.className} bg-main-background h-full w-full flex-grow`}>
         <AppRouterCacheProvider options={{key: 'css'}}>
-            {children}
+                {children}
         </AppRouterCacheProvider>
         </body>
         </html>
