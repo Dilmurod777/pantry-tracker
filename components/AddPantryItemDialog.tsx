@@ -5,18 +5,20 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material';
+import {PantryItem} from "@/app/lib/models";
+import {uuidv4} from "@firebase/util";
 
 interface Props {
     isOpen: boolean;
     handleClose: () => void;
+    onSubmit: (data: PantryItem) => void
 }
 
-const AddPantryItemDialog = ({isOpen, handleClose}: Props) => {
+const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -34,8 +36,13 @@ const AddPantryItemDialog = ({isOpen, handleClose}: Props) => {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const formJson = Object.fromEntries((formData as any).entries());
-                    const email = formJson.email;
-                    console.log(email);
+
+                    onSubmit({
+                        id: uuidv4(),
+                        name: formJson.name,
+                        price: formJson.price,
+                        quantity: formJson.quantity
+                    });
                     handleClose();
                 },
             }}

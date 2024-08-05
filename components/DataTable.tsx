@@ -28,7 +28,7 @@ const StyledTableRow = styled(TableRow)(({theme}) => ({
 
 const DataTable = ({rows}: Props) => {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -53,9 +53,12 @@ const DataTable = ({rows}: Props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row, rowIndex) => (
+                        {rows.slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage,
+                        ).map((row, rowIndex) => (
                             <StyledTableRow
-                                key={row.name}
+                                key={row.id}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
                             >
                                 <TableCell>{rowIndex + 1}</TableCell>
