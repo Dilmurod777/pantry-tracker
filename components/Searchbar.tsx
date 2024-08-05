@@ -3,10 +3,11 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 interface Props {
-    callback: (n: string) => void
+    searchCallback: (n: string) => void,
+    resetCallback: () => void
 }
 
-const Searchbar = ({callback}: Props) => {
+const Searchbar = ({searchCallback, resetCallback}: Props) => {
     const [searchValue, setSearchValue] = useState("")
 
     return (
@@ -17,15 +18,26 @@ const Searchbar = ({callback}: Props) => {
                 variant="outlined"
                 className={"h-full w-full"}
                 size={"small"}
+                value={searchValue}
+                onChange={e => setSearchValue(e.target.value)}
             />
 
             <Button
                 color={"primary"}
                 variant="contained"
-                onClick={() => callback(searchValue)}
+                onClick={() => searchCallback(searchValue)}
                 disabled={searchValue == ""}
                 disableElevation
             >Search</Button>
+            <Button
+                color={"secondary"}
+                variant="contained"
+                onClick={() => {
+                    setSearchValue("");
+                    resetCallback();
+                }}
+                disableElevation
+            >Reset</Button>
         </div>
     );
 };

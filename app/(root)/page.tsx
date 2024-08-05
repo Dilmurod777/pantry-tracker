@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import DataTable from "@/components/DataTable";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {PantryItem} from "@/app/lib/models";
 import Searchbar from "@/components/Searchbar";
 import {ThemeProvider, createTheme} from '@mui/material/styles';
@@ -27,10 +27,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
     const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-
-    const searchItemByName = (name: string) => {
-        console.log(`searched ${name}`)
-    }
+    const [filteredName, setFilteredName] = useState("");
 
     const addPantryItemHandler = async (data: PantryItem) => {
         setIsLoading(true);
@@ -57,9 +54,10 @@ export default function Home() {
                     Your <span className={"ml-4 italic underline"}>Pantry Tracker</span>
                 </div>
 
-                <Searchbar callback={searchItemByName}/>
+                <Searchbar searchCallback={value => setFilteredName(value)} resetCallback={() => setFilteredName("")}/>
 
-                <DataTable rows={pantryItems}/>
+                <DataTable
+                    rows={filteredName.length > 0 ? pantryItems.filter(item => item.name.toLowerCase().startsWith(filteredName.toLowerCase())) : pantryItems}/>
 
                 <div className={"flex items-center justify-end py-4 w-full "}>
                     <Button variant="contained" onClick={() => setIsAddDialogOpen(true)}>Add</Button>
@@ -72,11 +70,11 @@ export default function Home() {
                 />
 
                 <Backdrop
-                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
                     open={isLoading}
                     onClick={() => setIsLoading(false)}
                 >
-                    <CircularProgress color="inherit" />
+                    <CircularProgress color="inherit"/>
                 </Backdrop>
             </main>
         </ThemeProvider>
