@@ -11,9 +11,14 @@ import Paper from '@mui/material/Paper';
 import {styled} from '@mui/material/styles';
 import {PantryItem} from "@/app/lib/models";
 import TablePagination from '@mui/material/TablePagination';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface Props {
-    rows: PantryItem[]
+    rows: PantryItem[],
+    editCallback: (id: string) => void
+    deleteCallback: (id: string) => void
 }
 
 const StyledTableRow = styled(TableRow)(({theme}) => ({
@@ -26,9 +31,9 @@ const StyledTableRow = styled(TableRow)(({theme}) => ({
     },
 }));
 
-const DataTable = ({rows}: Props) => {
+const DataTable = ({rows, deleteCallback, editCallback}: Props) => {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(25);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -50,6 +55,7 @@ const DataTable = ({rows}: Props) => {
                             <TableCell align="right">Quantity (unit)</TableCell>
                             <TableCell align="right">Unit Price($)</TableCell>
                             <TableCell align="right">Total Price($)</TableCell>
+                            <TableCell align={"right"}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -68,6 +74,14 @@ const DataTable = ({rows}: Props) => {
                                 <TableCell align="right">{row.quantity}</TableCell>
                                 <TableCell align="right">{row.price}</TableCell>
                                 <TableCell align="right">{row.price * row.quantity}</TableCell>
+                                <TableCell align="right">
+                                    <IconButton aria-label="delete" color={"primary"} onClick={() => editCallback(row.id)}>
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton aria-label="delete" color={"error"} onClick={() => deleteCallback(row.id)}>
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </TableCell>
                             </StyledTableRow>
                         ))}
 

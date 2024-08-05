@@ -26,12 +26,35 @@ const theme = createTheme({
 export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
     const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [filteredName, setFilteredName] = useState("");
 
-    const addPantryItemHandler = async (data: PantryItem) => {
+    const editingId = useRef<string>("");
+
+    const dialogSubmitHandler = async (data: PantryItem) => {
         setIsLoading(true);
-        await firestoreActions.AddRecord(data);
+
+        if(editingId.current){
+            await firestoreActions.EditRecord(data);
+        }else{
+            await firestoreActions.AddRecord(data);
+        }
+
+        const newItems = await firestoreActions.GetAllRecords();
+        setPantryItems(newItems);
+
+        editingId.current = "";
+        setIsLoading(false);
+    }
+
+    const editPantryItemHandler = (id: string) => {
+        editingId.current = id;
+        setIsDialogOpen(true);
+    }
+
+    const deletePantryItemHandler = async (id: string) => {
+        setIsLoading(true);
+        await firestoreActions.DeleteRecord(id);
         const newItems = await firestoreActions.GetAllRecords();
         setPantryItems(newItems);
         setIsLoading(false);
@@ -46,6 +69,17 @@ export default function Home() {
         })
     }, []);
 
+    const filteredRows = filteredName.length > 0
+        ? pantryItems.filter(item => item.name.toLowerCase().startsWith(filteredName.toLowerCase()))
+        : pantryItems;
+
+    const editingItems = pantryItems.filter(item => item.id == editingId.current);
+    const editingItem = editingId.current == ""
+        ? null
+        : editingItems.length > 0
+            ? editingItems[0]
+            : null
+
     return (
         <ThemeProvider theme={theme}>
             <main
@@ -57,16 +91,20 @@ export default function Home() {
                 <Searchbar searchCallback={value => setFilteredName(value)} resetCallback={() => setFilteredName("")}/>
 
                 <DataTable
-                    rows={filteredName.length > 0 ? pantryItems.filter(item => item.name.toLowerCase().startsWith(filteredName.toLowerCase())) : pantryItems}/>
+                    rows={filteredRows}
+                    deleteCallback={(id) => deletePantryItemHandler(id)}
+                    editCallback={(id) => editPantryItemHandler(id)}
+                />
 
                 <div className={"flex items-center justify-end py-4 w-full "}>
-                    <Button variant="contained" onClick={() => setIsAddDialogOpen(true)}>Add</Button>
+                    <Button variant="contained" onClick={() => setIsDialogOpen(true)}>Add</Button>
                 </div>
 
                 <AddPantryItemDialog
-                    isOpen={isAddDialogOpen}
-                    handleClose={() => setIsAddDialogOpen(false)}
-                    onSubmit={addPantryItemHandler}
+                    isOpen={isDialogOpen}
+                    handleClose={() => setIsDialogOpen(false)}
+                    onSubmit={dialogSubmitHandler}
+                    item={editingItem}
                 />
 
                 <Backdrop

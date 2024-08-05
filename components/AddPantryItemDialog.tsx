@@ -15,10 +15,11 @@ import {uuidv4} from "@firebase/util";
 interface Props {
     isOpen: boolean;
     handleClose: () => void;
-    onSubmit: (data: PantryItem) => void
+    onSubmit: (data: PantryItem) => void,
+    item: PantryItem | null
 }
 
-const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
+const AddPantryItemDialog = ({isOpen, handleClose, onSubmit, item}: Props) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -38,7 +39,7 @@ const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
                     const formJson = Object.fromEntries((formData as any).entries());
 
                     onSubmit({
-                        id: uuidv4(),
+                        id: item == null ? uuidv4() : item.id,
                         name: formJson.name,
                         price: formJson.price,
                         quantity: formJson.quantity
@@ -61,6 +62,7 @@ const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
                     type="text"
                     fullWidth
                     variant="standard"
+                    defaultValue={item?.name || ""}
                 />
                 <TextField
                     autoFocus
@@ -72,6 +74,7 @@ const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
                     type="number"
                     fullWidth
                     variant="standard"
+                    defaultValue={item?.quantity || 0}
                 />
                 <TextField
                     autoFocus
@@ -83,6 +86,7 @@ const AddPantryItemDialog = ({isOpen, handleClose, onSubmit}: Props) => {
                     type="number"
                     fullWidth
                     variant="standard"
+                    defaultValue={item?.price || 0}
                 />
             </DialogContent>
             <DialogActions>
